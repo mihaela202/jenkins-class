@@ -1,5 +1,6 @@
 // Uniq name for the pod or slave 
 def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
+// yaml def for slaves 
 def slavePodTemplate = """
       metadata:
         labels:
@@ -18,7 +19,6 @@ def slavePodTemplate = """
                   - jenkins-jenkins-master
               topologyKey: "kubernetes.io/hostname"
         containers:
-        
         - name: docker
           image: docker:latest
           imagePullPolicy: IfNotPresent
@@ -39,13 +39,13 @@ def slavePodTemplate = """
     """
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: false) {
       node(k8slabel) {
-        stage("Checkoup SCM") {
-            checount scm 
+          stage("Checkout SCM") {
+            checkout scm 
         }
         dir('deployments/docker') {
-            stage ( "checking") {
+            stage('checking') {
                 sh 'ls -l'
-          }
+            }
         }
       }
     }
