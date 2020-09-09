@@ -55,8 +55,8 @@ def slavePodTemplate = """
         
                 stage ('Docker push') {
                     println(branch)
-                    sh ' docker tag  artemis varanita/artemis'
-                    sh 'docker push varanita/artemis'
+                    sh " docker tag  artemis varanita/artemis:${branch}"
+                    sh "docker push varanita/artemis:${branch}"
                  }
               }
              }                              
