@@ -2,6 +2,23 @@
 def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
 def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '')
 // yaml def for slaves 
+def gitCommitHash = ''
+def environment = ""
+
+if (branch == "master") {
+  println("The application will be deployed to stage environment!")
+  environment = "stage"
+} else if (branch.contains('dev-feature')) {
+  println("The application will be deployed to stage environment!")
+  environment = "dev"
+} else if (branch.contains('qa-feature')) {
+  println("The application will be deployed to stage environment!")
+  environment = "qa"
+} else {
+  printls ('Pleas use the proper name for you branch!')
+  currentBuild.result = 'FAILURE'
+  println("ERROR Detected:")
+  
 properties([
     [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], 
     parameters([
@@ -48,6 +65,7 @@ def slavePodTemplate = """
       node(k8slabel) {
           stage("Checkout SCM") {
             checkout scm 
+            gitCommitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
         }
         dir('deployments/docker') {
             container("docker") {
@@ -68,11 +86,21 @@ def slavePodTemplate = """
 
                     } 
                     
-                    }
                     
-                    sh " docker tag  artemis varanita/artemis:${branch}"
-                    sh "docker push varanita/artemis:${branch}"
+                    
+                    sh " docker tag  artemis varanita/artemis:${gitCommitHash}"
+                    sh "docker push varanita/artemis:${gitCommitHash}"
                  }
+                 stage ('Trigger Deploy') {
+                     build job: 'artemis-deploy', 
+                     parameters: [
+                        booleanParam(name: 'applyChanges', value: true), 
+                        booleanParam(name: 'destroyChanges', value: false), 
+                        string(name: 'selectedDockerImage', value:"${gitCommitHash}"), 
+                        string(name: 'environment ', value: 'dev ')
+                        ]
+                 }
+                }
               }
              }                              
         }
