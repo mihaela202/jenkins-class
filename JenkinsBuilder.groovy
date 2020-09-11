@@ -18,7 +18,7 @@ if (branch == "master") {
   printls ('Pleas use the proper name for you branch!')
   currentBuild.result = 'FAILURE'
   println("ERROR Detected:")
-  
+
 properties([
     [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], 
     parameters([
@@ -97,7 +97,7 @@ def slavePodTemplate = """
                         booleanParam(name: 'applyChanges', value: true), 
                         booleanParam(name: 'destroyChanges', value: false), 
                         string(name: 'selectedDockerImage', value:"${gitCommitHash}"), 
-                        string(name: 'environment ', value: 'dev ')
+                        string(name: 'environment ', value: "${environment")
                         ]
                  }
                 }
