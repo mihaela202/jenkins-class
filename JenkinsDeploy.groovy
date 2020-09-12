@@ -50,8 +50,31 @@ def slavePodTemplate = """
         }
         stage("Apply/Plan") {
             container("fuchicorptools") {
-                sh 'kubectl version'
+
+
+                if (!params.destroyChanges) {
+                    if (params.applyChanges) {
+                        println("Applying the changes!")
+                    } else {
+                        println("Planing the changes")
+                    }
+                }
+        stage ("Destroy") {
+            if (!params.applyChanges) {
+                if (params.destroyChanges) {
+                    println("Destroying everything")
+                } 
+            } else {
+                println("""
+                Sorry I can not destroy Tools!!!
+                I can Destroy only following environments dev, qa, test, stage
+                """)
             }
+            
+        }
+
+            }
+                
         }
       }
     }
