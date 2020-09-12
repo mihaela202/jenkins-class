@@ -93,12 +93,12 @@ def slavePodTemplate = """
 
                         if (params.pushLatest) {
                             println('Pushing the image to latest version!!')
-                            sh "docker tag artemis mihaela202/artemis:latest"
-                            sh "docker push mihaela202/artemis:latest"
+                            sh "docker tag artemis varanita/artemis:latest"
+                            sh "docker push varanita/artemis:latest"
                         } 
 
-                        sh "docker tag artemis mihaela202/artemis:${gitCommitHash}"
-                        sh "docker push mihaela202/artemis:${gitCommitHash}"
+                        sh "docker tag artemis varanita/artemis:${gitCommitHash}"
+                        sh "docker push varanita/artemis:${gitCommitHash}"
                     }
 
                     stage('Trigger Deploy') {
